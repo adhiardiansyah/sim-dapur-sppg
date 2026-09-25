@@ -17,7 +17,7 @@
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label class="form-label">Kontak</label>
-                        <input name="kontak" value="{{ old('kontak', $sekolah->kontak) }}" class="form-control">
+                        <input name="kontak" value="{{ old('kontak', $sekolah->kontak) }}" class="form-control" inputmode="tel" pattern="[0-9+\-\s()]*" title="Hanya boleh angka, boleh diawali + dan tanda hubung">
                     </div>
                     <div class="col-md-6 mb-3">
                         <label class="form-label">Koordinat (opsional)</label>

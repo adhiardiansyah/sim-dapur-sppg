@@ -51,8 +51,11 @@ class SupplierController extends Controller
     {
         return $request->validate([
             'nama' => ['required', 'string', 'max:150'],
-            'kontak' => ['nullable', 'string', 'max:50'],
+            'kontak' => ['nullable', 'string', 'max:50', 'regex:/^[0-9+\\-\\s()]*$/'],
             'alamat' => ['nullable', 'string'],
-        ], ['required' => ':attribute wajib diisi.']);
+        ], [
+            'required' => ':attribute wajib diisi.',
+            'kontak.regex' => 'Kontak hanya boleh berisi angka, tanda +, dan tanda hubung.',
+        ]);
     }
 }

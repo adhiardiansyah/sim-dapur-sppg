@@ -12,7 +12,7 @@
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Kontak</label>
-                    <input name="kontak" value="{{ old('kontak', $supplier->kontak) }}" class="form-control">
+                    <input name="kontak" value="{{ old('kontak', $supplier->kontak) }}" class="form-control" inputmode="tel" pattern="[0-9+\-\s()]*" title="Hanya boleh angka, boleh diawali + dan tanda hubung">
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Alamat</label>

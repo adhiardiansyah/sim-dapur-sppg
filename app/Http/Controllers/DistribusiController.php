@@ -26,7 +26,7 @@ class DistribusiController extends Controller
         return view('distribusi.create', [
             'produksi' => Produksi::with('jadwal.menu')
                 ->whereIn('status', ['berjalan', 'selesai'])
-                ->orderByRaw("FIELD(status, 'berjalan', 'selesai')")
+                ->orderByRaw("CASE WHEN status = 'berjalan' THEN 0 ELSE 1 END")
                 ->orderByDesc('id')->get(),
             'sekolah' => Sekolah::where('aktif', true)->orderBy('nama')->get(),
         ]);

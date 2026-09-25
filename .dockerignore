@@ -1,0 +1,9 @@
+.env
+.git
+.github
+/vendor
+/node_modules
+/storage/logs/*.log
+/tests
+/CLAUDE.md
+/AGENTS.md

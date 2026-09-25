@@ -114,3 +114,26 @@ routes/web.php            Definisi rute dan pembatasan peran
 
 - Data bawaan (seeder) bersifat contoh untuk keperluan demonstrasi dan pengujian.
 - Proyek ini merupakan karya akademik untuk mata kuliah STSI4440 Capstone Project Universitas Terbuka dan tidak digunakan untuk tujuan komersial.
+
+## Deployment Gratis (Render + Neon)
+
+Aplikasi dapat dideploy gratis menggunakan **Render** (aplikasi web, Docker) dan **Neon** (basis data PostgreSQL):
+
+1. Buat akun di [neon.tech](https://neon.tech) (login via GitHub), buat proyek, lalu salin *connection string* PostgreSQL.
+2. Buat akun di [render.com](https://render.com) (login via GitHub), lalu **New → Web Service** dan hubungkan repositori ini (runtime Docker terdeteksi otomatis).
+3. Isi *Environment Variables*:
+
+   | Kunci | Nilai |
+   |-------|-------|
+   | `APP_KEY` | kunci hasil `php artisan key:generate --show` |
+   | `APP_ENV` | `production` |
+   | `APP_DEBUG` | `false` |
+   | `DB_CONNECTION` | `pgsql` |
+   | `DB_URL` | *connection string* Neon (`postgresql://...`) |
+   | `DB_SSLMODE` | `require` |
+   | `SESSION_DRIVER` | `database` |
+   | `CACHE_STORE` | `database` |
+
+4. Aktifkan *Health Check Path* `/up`, lalu deploy. Migrasi dan data awal (akun uji, contoh data) berjalan otomatis saat aplikasi pertama kali dijalankan.
+
+Catatan: pada layanan gratis Render, aplikasi "tidur" setelah ±15 menit tanpa akses (akses pertama berikutnya lebih lambat ±30–60 detik).

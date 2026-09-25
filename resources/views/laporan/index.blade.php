@@ -30,7 +30,7 @@
     <div class="card border-0 shadow-sm">
         <div class="card-header bg-white d-flex justify-content-between align-items-center">
             <span class="fw-semibold">Laporan {{ $jenisLabel }} ({{ $dari->translatedFormat('d M Y') }} — {{ $sampai->translatedFormat('d M Y') }})</span>
-            <button onclick="window.print()" class="btn btn-sm btn-outline-secondary"><i class="bi bi-printer me-1"></i>Cetak</button>
+            <a href="{{ route('laporan.cetak', ['jenis' => $jenis, 'dari' => $dari->toDateString(), 'sampai' => $sampai->toDateString()]) }}" target="_blank" class="btn btn-sm btn-outline-secondary"><i class="bi bi-printer me-1"></i>Cetak</a>
         </div>
         <div class="card-body p-0">
             @if ($jenis === 'produksi')

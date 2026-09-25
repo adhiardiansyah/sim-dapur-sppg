@@ -55,6 +55,7 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::get('laporan', [LaporanController::class, 'index'])->name('laporan.index');
+    Route::get('laporan/cetak', [LaporanController::class, 'cetak'])->name('laporan.cetak');
     Route::get('distribusi', [DistribusiController::class, 'index'])->name('distribusi.index');
     Route::middleware('role:kepala_sppg')->group(function () {
         Route::get('distribusi/buat', [DistribusiController::class, 'create'])->name('distribusi.create');

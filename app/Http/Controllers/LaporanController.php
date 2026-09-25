@@ -20,41 +20,66 @@ class LaporanController extends Controller
 
     public function index(Request $request): View
     {
+        [$jenis, $dari, $sampai] = $this->parameter($request);
+
+        return view('laporan.index', $this->data($jenis, $dari, $sampai) + [
+            'jenis' => $jenis,
+            'jenisLabel' => self::JENIS[$jenis],
+            'dari' => $dari,
+            'sampai' => $sampai,
+        ]);
+    }
+
+    /**
+     * Halaman cetak: tampilan dokumen bersih (tanpa navigasi) yang
+     * otomatis membuka dialog cetak.
+     */
+    public function cetak(Request $request): View
+    {
+        [$jenis, $dari, $sampai] = $this->parameter($request);
+
+        return view('laporan.cetak', $this->data($jenis, $dari, $sampai) + [
+            'jenis' => $jenis,
+            'jenisLabel' => self::JENIS[$jenis],
+            'dari' => $dari,
+            'sampai' => $sampai,
+        ]);
+    }
+
+    private function parameter(Request $request): array
+    {
         $jenis = $request->input('jenis', 'produksi');
         if (! array_key_exists($jenis, self::JENIS)) {
             $jenis = 'produksi';
         }
 
-        $dari = $request->date('dari') ?? now()->startOfMonth();
-        $sampai = $request->date('sampai') ?? now()->endOfMonth();
+        return [$jenis, $request->date('dari') ?? now()->startOfMonth(), $request->date('sampai') ?? now()->endOfMonth()];
+    }
 
-        $data = [
-            'jenis' => $jenis,
-            'jenisLabel' => self::JENIS[$jenis],
-            'dari' => $dari,
-            'sampai' => $sampai,
-        ];
-
+    private function data(string $jenis, $dari, $sampai): array
+    {
         if ($jenis === 'produksi') {
-            $data['produksi'] = Produksi::with('jadwal.menu')
-                ->whereBetween('tanggal', [$dari, $sampai])
-                ->orderBy('tanggal')->get();
-        } elseif ($jenis === 'distribusi') {
-            $data['distribusi'] = Distribusi::with(['produksi.jadwal.menu', 'sekolah', 'petugas'])
-                ->whereHas('produksi', fn ($q) => $q->whereBetween('tanggal', [$dari, $sampai]))
-                ->orderBy('id')->get();
-        } elseif ($jenis === 'stok') {
-            $data['bahan'] = BahanBaku::orderBy('nama')->get();
-        } elseif ($jenis === 'anggaran') {
-            $pengadaan = StokMasuk::with('bahan')
-                ->whereBetween('tanggal', [$dari, $sampai])
-                ->get();
-            $totalPorsi = Produksi::whereBetween('tanggal', [$dari, $sampai])->sum('porsi_realisasi');
-            $data['pengadaan'] = $pengadaan;
-            $data['totalPengadaan'] = $pengadaan->sum(fn ($s) => (float) $s->jumlah * (float) ($s->harga_satuan ?? 0));
-            $data['totalPorsi'] = (int) $totalPorsi;
+            return ['produksi' => Produksi::with('jadwal.menu')
+                ->whereBetween('tanggal', [$dari, $sampai])->orderBy('tanggal')->get()];
         }
 
-        return view('laporan.index', $data);
+        if ($jenis === 'distribusi') {
+            return ['distribusi' => Distribusi::with(['produksi.jadwal.menu', 'sekolah', 'petugas'])
+                ->whereHas('produksi', fn ($q) => $q->whereBetween('tanggal', [$dari, $sampai]))
+                ->orderBy('id')->get()];
+        }
+
+        if ($jenis === 'stok') {
+            return ['bahan' => BahanBaku::orderBy('nama')->get()];
+        }
+
+        $pengadaan = StokMasuk::with('bahan')
+            ->whereBetween('tanggal', [$dari, $sampai])->get();
+
+        return [
+            'pengadaan' => $pengadaan,
+            'totalPengadaan' => $pengadaan->sum(fn ($s) => (float) $s->jumlah * (float) ($s->harga_satuan ?? 0)),
+            'totalPorsi' => (int) Produksi::whereBetween('tanggal', [$dari, $sampai])->sum('porsi_realisasi'),
+        ];
     }
 }
